@@ -23,7 +23,7 @@ function CarCreate() {
     const createCar = async () => {
         const baseUrl = "http://localhost:8080"
         try {
-            const response = await axios.post(`${baseUrl}/games`, {...car})
+            const response = await axios.post(`${baseUrl}/addgame`, {...car})
             const createdGame = response.data.game;
             setCar(createdGame);
             alert(response.data.message)

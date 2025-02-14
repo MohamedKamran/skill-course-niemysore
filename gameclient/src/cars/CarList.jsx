@@ -1,20 +1,18 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../header/PageHeader";
-import axios from 'axios'
+import axios from 'axios';
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+
+DataTable.use(DT);
 
 function CarList() {
-    const [cars, setCars]= useState([{
-        id: '',
-        title: '',
-        description: '',
-        no_of_players: '',
-        ratings: ''
-    }])
-
+    const [cars, setCars] = useState([]);
+    
     const readAllCars = async () => {
         try {
             const baseUrl = 'http://localhost:8080';
-            const response = await axios.get(`${baseUrl}/games`);
+            const response = await axios.get(`${baseUrl}/cars`);
             const queriedCars = response.data;
             setCars(queriedCars);
         } catch(error) {
@@ -28,7 +26,7 @@ function CarList() {
         }
         const baseUrl = "http://localhost:8080"
         try {
-            const response = await axios.delete(`${baseUrl}/games/${id}`)
+            const response = await axios.delete(`${baseUrl}/cars/${id}`)
             alert(response.data.message)
             await readAllCars();
         } catch(error) {
@@ -36,49 +34,55 @@ function CarList() {
         }
     };
     
-    useEffect(()=>{
+    useEffect(() => {
         readAllCars();
-    },[]);
+    }, []);
+
+    // Transform cars data for DataTable
+    const tableData = cars.map(car => [
+        car.id,
+        car.number,
+        car.model,
+        car.type,
+        `<div>
+            <a href="/cars/view/${car.id}" class="btn btn-success">View</a>
+            <a href="/cars/edit/${car.id}" class="btn btn-warning">Edit</a>
+            <button class="btn btn-danger delete-btn" data-id="${car.id}">Delete</button>
+        </div>`
+    ]);
 
     return (
         <>
             <PageHeader />
-            <h3>List of Games</h3>
+            <h3>List of Cars</h3>
             <div className="container">
-                <table className="table table-success table-striped">
+                <DataTable 
+                    data={tableData}
+                    className="display table table-striped"
+                    options={{
+                        responsive: true,
+                        dom: 'Bfrtip',
+                        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                        drawCallback: function(settings) {
+                            // Add click handlers for delete buttons
+                            document.querySelectorAll('.delete-btn').forEach(btn => {
+                                btn.addEventListener('click', () => {
+                                    deleteCar(btn.dataset.id);
+                                });
+                            });
+                        }
+                    }}
+                >
                     <thead className="table-dark">
                         <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Title</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Players</th>
-                            <th scope="col">Rating</th>
-                            <th></th>
+                            <th>ID</th>
+                            <th>Car Number</th>
+                            <th>Model</th>
+                            <th>Type</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody> 
-                        {(cars && cars.length > 0) ? cars.map(
-                            (car) =>  {return (<tr key={car.id}>
-                                <th scope="row">{car.id}</th>
-                                <td>{car.title}</td>
-                                <td>{car.description}</td>
-                                <td>{car.no_of_players}</td>
-                                <td>{car.ratings}</td>
-                                <td>
-                                    <a href={`/games/view/${car.id}`} 
-                                        className="btn btn-success">View</a>
-                                    &nbsp;
-                                    <a href={`/games/edit/${car.id}`} 
-                                        className="btn btn-warning">Edit</a>
-                                    &nbsp;
-                                    <button  
-                                        className="btn btn-danger"
-                                        onClick={()=>deleteCar(car.id)}>Delete</button>
-                                </td>
-                            </tr>);}
-                        ) : <tr><td colSpan="6">No Games Found</td></tr>}
-                    </tbody>
-                </table>
+                </DataTable>
             </div>
         </>
     );

@@ -29,8 +29,8 @@ type Game struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Title       string             `json:"title" bson:"title"`
 	Description string             `json:"description" bson:"description"`
-	NoOfPlayers int                `json:"no_of_players" bson:"no_of_players"`
-	Ratings     float64            `json:"ratings" bson:"ratings"`
+	NoOfPlayers string             `json:"no_of_players" bson:"no_of_players"`
+	Ratings     string             `json:"ratings" bson:"ratings"`
 }
 
 // Connect to MongoDB
@@ -53,6 +53,7 @@ func createGame(c *gin.Context) {
 	var game Game
 
 	if err := c.BindJSON(&game); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -213,7 +214,7 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	r.POST("/games", createGame)
+	r.POST("/addgame", createGame)
 	r.GET("/games", readAllGames)
 	r.GET("/games/:id", readGameById)
 	r.PUT("/games/:id", updateGame)

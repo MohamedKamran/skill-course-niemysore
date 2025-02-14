@@ -39,7 +39,7 @@ function CarEdit() {
             const updatedCar = response.data.car;
             setCar(updatedCar);
             alert(response.data.message)
-            navigate('/games/list')
+            navigate('/cars/list')
         } catch(error) {
             alert('Server Error');
         }
