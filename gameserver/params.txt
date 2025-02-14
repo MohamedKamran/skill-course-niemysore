@@ -1,0 +1,5 @@
+id
+title
+description
+no_of_players
+ratings
