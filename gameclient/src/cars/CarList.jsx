@@ -12,7 +12,7 @@ function CarList() {
     const readAllCars = async () => {
         try {
             const baseUrl = 'http://localhost:8080';
-            const response = await axios.get(`${baseUrl}/cars`);
+            const response = await axios.get(`${baseUrl}/games`);
             const queriedCars = response.data;
             setCars(queriedCars);
         } catch(error) {
@@ -26,7 +26,7 @@ function CarList() {
         }
         const baseUrl = "http://localhost:8080"
         try {
-            const response = await axios.delete(`${baseUrl}/cars/${id}`)
+            const response = await axios.delete(`${baseUrl}/games/${id}`)
             alert(response.data.message)
             await readAllCars();
         } catch(error) {
@@ -54,7 +54,7 @@ function CarList() {
     return (
         <>
             <PageHeader />
-            <h3>List of Cars</h3>
+            <h3>List of Games</h3>
             <div className="container">
                 <DataTable 
                     data={tableData}
